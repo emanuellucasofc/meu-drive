@@ -6,7 +6,7 @@ const list = document.getElementById("list");
 const token = localStorage.getItem("access_token");
 if (!token) window.location.href = "./index.html";
 
-// elementos (podem existir no HTML)
+// elementos
 const btnLogout = document.getElementById("btnLogout");
 const btnUpload = document.getElementById("btnUpload");
 const fileInput = document.getElementById("fileInput");
@@ -20,9 +20,49 @@ function setMsg(text) {
 }
 
 function getFolderFromPath(storage_path) {
-  // formato: userId/folder/arquivo
   const parts = (storage_path || "").split("/");
   return parts[1] || "root";
+}
+
+function formatBytes(bytes) {
+  const n = Number(bytes);
+  if (!Number.isFinite(n) || n <= 0) return "0 KB";
+  const kb = n / 1024;
+  if (kb < 1024) return `${kb.toFixed(1)} KB`;
+  const mb = kb / 1024;
+  if (mb < 1024) return `${mb.toFixed(1)} MB`;
+  const gb = mb / 1024;
+  return `${gb.toFixed(2)} GB`;
+}
+
+function formatDate(iso) {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "—";
+  const pad = (x) => String(x).padStart(2, "0");
+  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function shortType(mime, name) {
+  // tenta mime primeiro
+  if (mime) {
+    if (mime.includes("pdf")) return "PDF";
+    if (mime.includes("image/")) return "Imagem";
+    if (mime.includes("video/")) return "Vídeo";
+    if (mime.includes("audio/")) return "Áudio";
+    if (mime.includes("text/")) return "Texto";
+    if (mime.includes("zip") || mime.includes("rar") || mime.includes("7z")) return "Compactado";
+  }
+
+  // fallback por extensão
+  const lower = (name || "").toLowerCase();
+  if (lower.endsWith(".pdf")) return "PDF";
+  if (/\.(png|jpg|jpeg|gif|webp)$/.test(lower)) return "Imagem";
+  if (/\.(mp4|mov|mkv|webm)$/.test(lower)) return "Vídeo";
+  if (/\.(mp3|wav|ogg)$/.test(lower)) return "Áudio";
+  if (/\.(zip|rar|7z)$/.test(lower)) return "Compactado";
+  if (/\.(txt|md|csv)$/.test(lower)) return "Texto";
+  return "Arquivo";
 }
 
 // ===== LOGOUT =====
@@ -46,14 +86,20 @@ function renderFiles(files) {
   }
 
   files.forEach(f => {
-    const name = f.display_name || f.original_name;
+    const name = f.display_name || f.original_name || "Sem nome";
     const folder = getFolderFromPath(f.storage_path);
+    const size = formatBytes(f.size);
+    const type = shortType(f.mime_type, f.original_name);
+    const date = formatDate(f.created_at);
 
     const li = document.createElement("li");
     li.className = "file-item";
     li.innerHTML = `
       <div class="file-name">${name}</div>
-      <div class="small">Pasta: ${folder}</div>
+      <div class="small">
+        Pasta: <b>${folder}</b> • Tipo: <b>${type}</b> • Tamanho: <b>${size}</b><br/>
+        Enviado em: <b>${date}</b>
+      </div>
 
       <div class="actions">
         <a class="link" href="${f.public_url}" target="_blank">Abrir</a>
@@ -109,7 +155,7 @@ async function loadFiles() {
   }
 
   allFiles = data.files || [];
-  applySearch(); // renderiza já com filtro atual
+  applySearch();
 }
 
 // ===== BUSCA =====
@@ -171,6 +217,9 @@ if (btnUpload) {
 
 // ===== DELETE =====
 async function deleteFile(id) {
+  const ok = confirm("Deseja deletar este arquivo?");
+  if (!ok) return;
+
   setMsg("Deletando...");
 
   const res = await fetch(`${API_BASE}/files/${id}`, {
