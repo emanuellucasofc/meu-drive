@@ -4,13 +4,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Meu Drive - Dashboard</title>
-  <link rel="stylesheet" href="./styles.css?v=20" />
+  <link rel="stylesheet" href="./styles.css?v=999" />
 </head>
 <body>
   <div class="topbar">
     <div class="topbar-inner">
       <div class="brand">Meu Drive</div>
-      <button id="btnLogout" class="btn-light">Sair</button>
+      <button id="btnLogout" class="btn-light" type="button">Sair</button>
     </div>
   </div>
 
@@ -28,24 +28,31 @@
 
         <div class="row">
           <input type="file" id="fileInput" />
-          <button id="btnUpload" class="btn-primary">Enviar</button>
+          <button id="btnUpload" class="btn-primary" type="button">Enviar</button>
         </div>
 
         <div class="small" id="msg"></div>
       </div>
 
-      <!-- Galeria -->
-      <div class="panel-title-row">
-  <button id="btnBackFolder" class="btn-light" type="button" style="display:none">← Voltar</button>
-  <h2 id="filesTitle" style="margin:0">Meus arquivos</h2>
-</div>
+      <!-- Arquivos -->
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title-row">
+            <button id="btnBackFolder" class="btn-light" type="button" style="display:none">← Voltar</button>
+            <h2 id="filesTitle" style="margin:0">Meus arquivos</h2>
+          </div>
 
-        <div id="folders" class="folder-bar"></div>
+          <input id="searchInput" type="text" placeholder="Buscar..." />
+        </div>
 
+        <!-- aqui ficam as pastas (cards) quando estiver fora da pasta -->
+        <div id="folders"></div>
+
+        <!-- grid das miniaturas -->
         <div id="gridFiles" class="file-grid"></div>
 
-        <!-- lista (oculta) só para manter compatível -->
-        <ul id="list" class="file-list" style="display:none"></ul>
+        <!-- lista oculta (compatibilidade) -->
+        <ul id="list" style="display:none"></ul>
       </div>
     </div>
   </div>
@@ -57,24 +64,23 @@
   </div>
 
   <!-- Modal Preview -->
-<div id="previewModal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <div id="previewTitle" class="modal-title">Preview</div>
+  <div id="previewModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div id="previewTitle" class="modal-title">Preview</div>
 
-      <div class="modal-actions">
-        <a id="btnDownloadPreview" class="btn-primary" download target="_blank">Baixar</a>
-        <button id="btnClosePreview" class="btn-light" type="button">Fechar</button>
+        <div class="modal-actions">
+          <a id="btnDownloadPreview" class="btn-primary" download target="_blank">Baixar</a>
+          <button id="btnClosePreview" class="btn-light" type="button">Fechar</button>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <img id="previewImg" alt="Preview" />
       </div>
     </div>
-
-    <div class="modal-body">
-      <img id="previewImg" alt="Preview" />
-    </div>
   </div>
-</div>
 
-
-  <script src="./dashboard.js?v=20"></script>
+  <script src="./dashboard.js?v=999"></script>
 </body>
 </html>
