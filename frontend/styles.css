@@ -196,3 +196,31 @@ button:active { transform: scale(0.98); }
     font-size: 17px;  /* melhor leitura no iOS */
   }
 }
+
+  /* ===== Ajuste fino dos cards de arquivos ===== */
+.file-item {
+  padding: 10px 12px;     /* antes estava maior */
+  gap: 6px;
+}
+
+.file-name {
+  font-size: 14.5px;      /* diminui um pouco */
+  font-weight: 700;
+}
+
+.file-item .small {
+  font-size: 12.5px;      /* info mais compacta */
+  line-height: 1.35;
+}
+
+.actions {
+  gap: 6px;
+}
+
+.actions button,
+.actions .link {
+  font-size: 12.5px;
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+
