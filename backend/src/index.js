@@ -81,8 +81,12 @@ app.post("/files/upload", requireUser, upload.single("file"), async (req, res) =
   if (!file) return res.status(400).json({ error: "Envie um arquivo no campo 'file'." });
 
   // path único no bucket
-  const safeName = file.originalname.replace(/\s+/g, "_");
-  const storagePath = `${userId}/${Date.now()}_${safeName}`;
+  const folderRaw = (req.body.folder || "root").toString();
+const folder = folderRaw.replace(/[^a-zA-Z0-9-_]/g, "").trim() || "root";
+
+const safeName = file.originalname.replace(/\s+/g, "_");
+const storagePath = `${userId}/${folder}/${Date.now()}_${safeName}`;
+
 
   // envia pro Supabase Storage
   const { error: upErr } = await supabaseAdmin
