@@ -1,14 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
   const API_BASE = "https://meu-drive-api.onrender.com";
 
-  // ===== Auth =====
   const token = localStorage.getItem("access_token");
   if (!token) {
     window.location.href = "./index.html";
     return;
   }
 
-  // ===== Elements =====
   const btnLogout = document.getElementById("btnLogout");
   const btnUpload = document.getElementById("btnUpload");
   const fileInput = document.getElementById("fileInput");
@@ -21,13 +19,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnBackFolder = document.getElementById("btnBackFolder");
   const filesTitle = document.getElementById("filesTitle");
 
-  // Toast
   const toast = document.getElementById("toast");
   const toastTitle = document.getElementById("toastTitle");
   const toastText = document.getElementById("toastText");
   let toastTimer = null;
 
-  // Modal
   const previewModal = document.getElementById("previewModal");
   const previewImg = document.getElementById("previewImg");
   const previewTitle = document.getElementById("previewTitle");
@@ -35,9 +31,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnDownloadPreview = document.getElementById("btnDownloadPreview");
 
   let allFiles = [];
-  let currentFolder = null; // null = fora da pasta (mostra cards de pastas)
+  let currentFolder = null;
 
-  // ===== Helpers =====
   function setMsg(text) {
     if (msg) msg.textContent = text || "";
   }
@@ -65,7 +60,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return /\.(png|jpg|jpeg|gif|webp)$/.test(lower);
   }
 
-  // ===== Modal Preview =====
   function openPreview(url, title) {
     if (!previewModal || !previewImg) return window.open(url, "_blank");
 
@@ -98,7 +92,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.key === "Escape") closePreview();
   });
 
-  // ===== Logout =====
   if (btnLogout) {
     btnLogout.onclick = () => {
       localStorage.removeItem("access_token");
@@ -107,7 +100,6 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 
-  // ===== Pasta UI =====
   function updateFolderUI() {
     if (btnBackFolder) btnBackFolder.style.display = currentFolder ? "inline-flex" : "none";
     if (filesTitle) filesTitle.textContent = currentFolder ? `Pasta: ${currentFolder}` : "Meus arquivos";
@@ -130,7 +122,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     foldersEl.innerHTML = "";
 
-    // Só mostra as pastas quando estiver fora (currentFolder === null)
     if (currentFolder === null) {
       const wrap = document.createElement("div");
       wrap.className = "folders-grid";
@@ -153,7 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
         btn.className = "folder-card";
         btn.textContent = name;
         btn.onclick = () => {
-          currentFolder = name; // entra na pasta
+          currentFolder = name;
           updateFolderUI();
           renderFolders(allFiles);
           renderGrid();
@@ -179,7 +170,31 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ===== Render Grid =====
+  async function moveFile(fileId, currentName) {
+    const newFolder = prompt("Mover para qual pasta? (ex: fotos, docs, root)", "root");
+    if (!newFolder) return;
+
+    showToast("Mover", "Movendo arquivo...");
+
+    const res = await fetch(`${API_BASE}/files/${fileId}/move`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ folder: newFolder.trim() }),
+    });
+
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      showToast("Erro", data.error || "Erro ao mover.");
+      return;
+    }
+
+    showToast("Sucesso", `Movido: ${currentName}`);
+    loadFiles();
+  }
+
   function renderGrid() {
     if (!gridFilesEl) return;
 
@@ -203,24 +218,42 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (isImg) {
         card.innerHTML = `
+          <div class="card-tools">
+            <button class="mini-btn" type="button" data-move>📁</button>
+          </div>
           <img class="thumb" src="${f.public_url}" alt="${name}" />
           <div class="thumb-name">${name}</div>
         `;
-        const img = card.querySelector(".thumb");
-        if (img) img.onclick = () => openPreview(f.public_url, name);
+
+        card.querySelector(".thumb").onclick = () => openPreview(f.public_url, name);
+
+        const mv = card.querySelector("[data-move]");
+        mv.onclick = (e) => {
+          e.stopPropagation();
+          moveFile(f.id, name);
+        };
       } else {
         card.innerHTML = `
+          <div class="card-tools">
+            <button class="mini-btn" type="button" data-move>📁</button>
+          </div>
           <div class="file-icon">📄</div>
           <div class="thumb-name">${name}</div>
         `;
+
         card.onclick = () => window.open(f.public_url, "_blank");
+
+        const mv = card.querySelector("[data-move]");
+        mv.onclick = (e) => {
+          e.stopPropagation();
+          moveFile(f.id, name);
+        };
       }
 
       gridFilesEl.appendChild(card);
     });
   }
 
-  // ===== Load Files =====
   async function loadFiles() {
     const res = await fetch(`${API_BASE}/files`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -242,7 +275,6 @@ document.addEventListener("DOMContentLoaded", () => {
     renderGrid();
   }
 
-  // ===== Upload =====
   async function uploadFile() {
     const file = fileInput?.files?.[0];
     if (!file) return showToast("Atenção", "Selecione um arquivo.");
@@ -272,6 +304,5 @@ document.addEventListener("DOMContentLoaded", () => {
   if (btnUpload) btnUpload.onclick = uploadFile;
   if (searchInput) searchInput.addEventListener("input", renderGrid);
 
-  // Start
   loadFiles();
 });
