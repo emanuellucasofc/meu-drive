@@ -317,4 +317,72 @@ input[type="file"]{
 }
 
 .mini-btn:hover{ filter: brightness(1.12); }
+/* ===== Menu de configurações por arquivo ===== */
+.file-card{
+  position: relative;
+}
 
+.card-top{
+  position:absolute;
+  top:6px;
+  right:6px;
+  z-index: 5;
+  display:flex;
+  align-items:center;
+  gap: 6px;
+}
+
+.menu-btn{
+  width: 34px;
+  height: 30px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 900;
+  background: rgba(11,42,102,.92);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.menu-btn:hover{ filter: brightness(1.12); }
+
+.menu{
+  position: absolute;
+  top: 36px;
+  right: 0;
+  min-width: 150px;
+  background: #ffffff;
+  color: #0b1b3a;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(0,0,0,.18);
+  overflow: hidden;
+  display: none;
+}
+
+.menu.open{ display:block; }
+
+.menu-item{
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.menu-item:hover{
+  background: #f1f5ff;
+}
+
+.menu-item.danger{
+  color: #b42318;
+}
+
+.menu-item.danger:hover{
+  background: #ffecec;
+}
