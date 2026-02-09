@@ -171,4 +171,5 @@ searchInput.addEventListener("input", () => {
 
   renderFiles(filtered);
 });
+document.getElementById("btnUpload").onclick = uploadFile;
 
