@@ -295,4 +295,26 @@ input[type="file"]{
 #btnBackFolder:hover {
   filter: brightness(1.15);
 }
+/* botão mini (mover) no card */
+.file-card{ position: relative; }
+
+.card-tools{
+  position:absolute;
+  top:6px;
+  right:6px;
+  z-index: 2;
+}
+
+.mini-btn{
+  border: none;
+  background: rgba(11,42,102,.92);
+  color:#fff;
+  border-radius: 10px;
+  width: 34px;
+  height: 30px;
+  cursor:pointer;
+  font-weight: 900;
+}
+
+.mini-btn:hover{ filter: brightness(1.12); }
 
