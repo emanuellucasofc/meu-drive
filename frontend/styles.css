@@ -145,38 +145,54 @@ button:active { transform: scale(0.98); }
   background: #0f2f6b;
   color: #ff
 
-  /* ===== Ajustes APENAS para celular (iOS/Android) ===== */
+ /* ===== Dashboard: ajustes APENAS para celular ===== */
 @media (max-width: 768px) {
-  .page-center {
-    padding: 14px;
+  .topbar-inner {
+    padding: 14px 14px;
   }
 
-  .card {
-    max-width: 520px;   /* fica “grande” no celular */
-    width: 100%;
-    padding: 26px;
+  .container {
+    padding: 16px 14px 28px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr; /* em celular vira 1 coluna */
+    gap: 14px;
+  }
+
+  .panel {
+    padding: 16px;
     border-radius: 18px;
   }
 
-  h1 {
-    font-size: 34px;
+  .row {
+    flex-direction: column; /* inputs e botão ficam um embaixo do outro */
+    align-items: stretch;
   }
 
-  .subtitle {
-    font-size: 16px;
+  .row input[type="text"],
+  .row input[type="file"] {
+    width: 100%;
+    min-width: 0;
   }
 
-  h2 {
-    font-size: 18px;
+  .btn-primary,
+  .btn-light {
+    width: 100%;
   }
 
+  .file-item {
+    padding: 14px;
+  }
+
+  .actions {
+    display: grid;
+    grid-template-columns: 1fr; /* botões em coluna, melhor pro toque */
+    gap: 8px;
+  }
+
+  button,
   input {
-    padding: 16px 14px;
-    font-size: 17px;   /* leitura melhor no iPhone */
-  }
-
-  button {
-    padding: 16px;
-    font-size: 17px;
+    font-size: 17px;  /* melhor leitura no iOS */
   }
 }
