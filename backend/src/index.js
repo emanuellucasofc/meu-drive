@@ -20,7 +20,20 @@ const BUCKET = process.env.SUPABASE_BUCKET || "uploads";
 const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
 // Upload em memória (não salva no disco do Render)
-const upload = multer({ storage: multer.memoryStorage() });
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const BLOCKED_EXT = [".exe", ".bat", ".cmd", ".msi", ".sh", ".js"];
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: MAX_FILE_SIZE },
+  fileFilter: (req, file, cb) => {
+    const name = (file.originalname || "").toLowerCase();
+    const blocked = BLOCKED_EXT.some(ext => name.endsWith(ext));
+    if (blocked) return cb(new Error("Tipo de arquivo não permitido."));
+    cb(null, true);
+  }
+});
+
 
 // Middleware: valida usuário pelo token do Supabase
 async function requireUser(req, res, next) {
@@ -129,6 +142,16 @@ app.delete("/files/:id", requireUser, async (req, res) => {
   if (delErr) return res.status(500).json({ error: delErr.message });
 
   return res.json({ ok: true });
+});
+// Tratamento de erro do multer (tamanho/arquivo inválido)
+app.use((err, req, res, next) => {
+  if (err?.code === "LIMIT_FILE_SIZE") {
+    return res.status(400).json({ error: "Arquivo muito grande (máx 10MB)." });
+  }
+  if (err?.message === "Tipo de arquivo não permitido.") {
+    return res.status(400).json({ error: err.message });
+  }
+  next(err);
 });
 
 app.listen(PORT, "0.0.0.0", () => console.log("API rodando na porta", PORT));
