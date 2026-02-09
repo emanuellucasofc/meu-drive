@@ -1,4 +1,4 @@
-const API_BASE = "COLE_AQUI_URL_DA_SUA_API_RENDER"; // ex: https://meu-drive-api.onrender.com
+const API_BASE = "https://meu-drive-api.onrender.com"; // ex: https://meu-drive-api.onrender.com
 
 const msg = document.getElementById("msg");
 const list = document.getElementById("list");
