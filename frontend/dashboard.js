@@ -95,16 +95,25 @@ function renderFiles(files) {
     const li = document.createElement("li");
     li.className = "file-item";
     li.innerHTML = `
+  <div class="file-row">
+    <div class="file-actions">
+      <a class="link" href="${f.public_url}" target="_blank">Abrir</a>
+      <button class="btn-secondary" data-rename="${f.id}">Renomear</button>
+      <button class="btn-danger" data-del="${f.id}">Deletar</button>
+    </div>
+
+    <div class="file-info">
       <div class="file-name">${name}</div>
       <div class="small">
-        Pasta: <b>${folder}</b> • Tipo: <b>${type}</b> • Tamanho: <b>${size}</b><br/>
+        Pasta: <b>${folder}</b><br/>
+        Tipo: <b>${type}</b><br/>
+        Tamanho: <b>${size}</b><br/>
         Enviado em: <b>${date}</b>
       </div>
+    </div>
+  </div>
+`;
 
-      <div class="actions">
-        <a class="link" href="${f.public_url}" target="_blank">Abrir</a>
-        <button class="btn-secondary" data-rename="${f.id}">Renomear</button>
-        <button class="btn-danger" data-del="${f.id}">Deletar</button>
       </div>
     `;
 
