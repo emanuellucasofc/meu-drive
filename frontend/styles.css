@@ -501,6 +501,67 @@ button:active { transform: scale(0.98); }
 @media (max-width: 1000px){
   .file-grid{ grid-template-columns: repeat(5, 1fr) !important; }
 }
+/* ===================================================
+   MINI-FOTOS (redução agressiva ~80%)
+   =================================================== */
+
+/* grid ultra compacto */
+.file-grid {
+  display: grid !important;
+  grid-template-columns: repeat(8, 1fr) !important;
+  gap: 8px !important;
+}
+
+/* card mínimo */
+.file-card {
+  border-radius: 8px !important;
+  overflow: hidden !important;
+}
+
+/* imagem MUITO menor */
+.file-card .thumb {
+  height: 55px !important;   /* <<< aqui está a redução real */
+  width: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+/* ícone de arquivo não-imagem */
+.file-card .file-icon {
+  height: 55px !important;
+  font-size: 26px !important;
+}
+
+/* remove qualquer padding interno */
+.file-card * {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* ================== MOBILE ================== */
+@media (max-width: 1100px){
+  .file-grid {
+    grid-template-columns: repeat(6, 1fr) !important;
+  }
+}
+
+@media (max-width: 800px){
+  .file-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+}
+
+@media (max-width: 480px){
+  .file-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+
+  .file-card .thumb,
+  .file-card .file-icon {
+    height: 50px !important;
+  }
+}
+
 @media (max-width: 700px){
   .file-grid{ grid-template-columns: repeat(3, 1fr) !important; }
 }
