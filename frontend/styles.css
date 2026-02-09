@@ -659,4 +659,71 @@ body {
     grid-template-columns: 1fr;
   }
 }
+/* ================================
+   🔧 CORREÇÃO GLOBAL DE CORES
+   ================================ */
+
+/* corpo escuro */
+body {
+  color: #ffffff;
+}
+
+/* cards claros precisam texto escuro */
+.panel,
+.upload-card,
+.files-card,
+.file-card,
+.login-card {
+  color: #0b1b3a;
+}
+
+/* títulos dentro dos cards */
+.panel h1,
+.panel h2,
+.upload-card h2,
+.files-card h2,
+.login-card h1,
+.login-card h2 {
+  color: #0b1b3a;
+}
+
+/* textos pequenos */
+.small,
+.thumb-name {
+  color: #334155;
+}
+
+/* inputs sempre legíveis */
+input,
+select,
+textarea {
+  color: #0b1b3a;
+  background: #ffffff;
+}
+
+/* placeholder visível */
+input::placeholder {
+  color: #64748b;
+}
+
+/* botões primários */
+.btn-primary,
+.menu-btn,
+.mini-btn {
+  color: #ffffff;
+}
+
+/* menu de três pontos */
+.menu {
+  color: #0b1b3a;
+}
+
+/* itens do menu */
+.menu-item {
+  color: #0b1b3a;
+}
+
+.menu-item.danger {
+  color: #c0392b;
+}
 
