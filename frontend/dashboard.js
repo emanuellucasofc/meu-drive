@@ -6,96 +6,71 @@ const list = document.getElementById("list");
 const token = localStorage.getItem("access_token");
 if (!token) window.location.href = "./index.html";
 
-document.getElementById("btnLogout").onclick = () => {
-  localStorage.removeItem("access_token");
-  window.location.href = "./index.html";
-};
+// elementos (podem existir no HTML)
+const btnLogout = document.getElementById("btnLogout");
+const btnUpload = document.getElementById("btnUpload");
+const fileInput = document.getElementById("fileInput");
+const folderInput = document.getElementById("folderInput");
+const searchInput = document.getElementById("searchInput");
 
-async function loadFiles() {
-  list.innerHTML = "";
-  msg.textContent = "";
+let allFiles = [];
 
-  const res = await fetch(`${API_BASE}/files`, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
+function setMsg(text) {
+  if (msg) msg.textContent = text || "";
+}
 
-  const data = await res.json();
-  if (!res.ok) {
-    msg.textContent = data.error || "Erro ao carregar.";
-    return;
-  }
+function getFolderFromPath(storage_path) {
+  // formato: userId/folder/arquivo
+  const parts = (storage_path || "").split("/");
+  return parts[1] || "root";
+}
 
-  if (!data.files.length) {
-    const li = document.createElement("li");
-    li.textContent = "Nenhum arquivo ainda.";
-    list.appendChild(li);
-    return;
-  }
+// ===== LOGOUT =====
+if (btnLogout) {
+  btnLogout.onclick = () => {
+    localStorage.removeItem("access_token");
+    window.location.href = "./index.html";
+  };
+}
 
-  allFiles = data.files;
-renderFiles(allFiles);
+// ===== RENDER =====
 function renderFiles(files) {
   list.innerHTML = "";
 
-  if (!files.length) {
+  if (!files || files.length === 0) {
     const li = document.createElement("li");
-    li.textContent = "Nenhum arquivo encontrado.";
+    li.className = "file-item";
+    li.innerHTML = `<div class="small">Nenhum arquivo encontrado.</div>`;
     list.appendChild(li);
     return;
   }
 
   files.forEach(f => {
     const name = f.display_name || f.original_name;
-    const folder = f.storage_path.split("/")[1] || "root";
+    const folder = getFolderFromPath(f.storage_path);
 
     const li = document.createElement("li");
     li.className = "file-item";
     li.innerHTML = `
       <div class="file-name">${name}</div>
       <div class="small">Pasta: ${folder}</div>
+
       <div class="actions">
         <a class="link" href="${f.public_url}" target="_blank">Abrir</a>
-        <button data-rename="${f.id}" class="btn-secondary">Renomear</button>
-        <button data-del="${f.id}" class="btn-danger">Deletar</button>
+        <button class="btn-secondary" data-rename="${f.id}">Renomear</button>
+        <button class="btn-danger" data-del="${f.id}">Deletar</button>
       </div>
     `;
 
+    // delete
     li.querySelector(`[data-del="${f.id}"]`).onclick = () => deleteFile(f.id);
+
+    // rename
     li.querySelector(`[data-rename="${f.id}"]`).onclick = async () => {
       const newName = prompt("Novo nome:", name);
       if (!newName) return;
 
-      const res = await fetch(`${API_BASE}/files/${f.id}/rename`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ display_name: newName })
-      });
-
-      if (res.ok) loadFiles();
-    };
-
-    list.appendChild(li);
-  });
-}
-
-    const name = f.display_name || f.original_name;
-
-    const li = document.createElement("li");
-    li.innerHTML = `
-      <b>${name}</b><br/>
-      <a href="${f.public_url}" target="_blank">Abrir link público</a>
-      <button data-rename="${f.id}">Renomear</button>
-      <button data-del="${f.id}">Deletar</button>
-    `;
-
-    li.querySelector(`[data-del="${f.id}"]`).onclick = () => deleteFile(f.id);
-
-    li.querySelector(`[data-rename="${f.id}"]`).onclick = async () => {
-      const newName = prompt("Novo nome:", name);
-      if (!newName) return;
+      setMsg("Renomeando...");
 
       const res = await fetch(`${API_BASE}/files/${f.id}/rename`, {
         method: "PATCH",
@@ -106,9 +81,10 @@ function renderFiles(files) {
         body: JSON.stringify({ display_name: newName.trim() })
       });
 
-      const data = await res.json();
-      if (!res.ok) return (msg.textContent = data.error || "Erro ao renomear.");
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) return setMsg(data.error || "Erro ao renomear.");
 
+      setMsg("Renomeado!");
       loadFiles();
     };
 
@@ -116,13 +92,57 @@ function renderFiles(files) {
   });
 }
 
+// ===== CARREGAR =====
+async function loadFiles() {
+  setMsg("");
+
+  const res = await fetch(`${API_BASE}/files`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+
+  const data = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    setMsg(data.error || "Erro ao carregar arquivos.");
+    renderFiles([]);
+    return;
+  }
+
+  allFiles = data.files || [];
+  applySearch(); // renderiza já com filtro atual
+}
+
+// ===== BUSCA =====
+function applySearch() {
+  if (!searchInput) {
+    renderFiles(allFiles);
+    return;
+  }
+
+  const term = (searchInput.value || "").trim().toLowerCase();
+  if (!term) return renderFiles(allFiles);
+
+  const filtered = allFiles.filter(f => {
+    const name = (f.display_name || f.original_name || "").toLowerCase();
+    const folder = getFolderFromPath(f.storage_path).toLowerCase();
+    return name.includes(term) || folder.includes(term);
+  });
+
+  renderFiles(filtered);
+}
+
+if (searchInput) {
+  searchInput.addEventListener("input", applySearch);
+}
+
+// ===== UPLOAD =====
 async function uploadFile() {
-  msg.textContent = "Enviando...";
+  setMsg("Enviando...");
 
-  const file = document.getElementById("fileInput").files[0];
-  if (!file) return (msg.textContent = "Selecione um arquivo.");
+  const file = fileInput?.files?.[0];
+  if (!file) return setMsg("Selecione um arquivo.");
 
-  const folder = (document.getElementById("folderInput").value || "root").trim();
+  const folder = (folderInput?.value || "root").trim();
 
   const form = new FormData();
   form.append("file", file);
@@ -134,42 +154,39 @@ async function uploadFile() {
     body: form
   });
 
-  const data = await res.json();
-  if (!res.ok) return (msg.textContent = data.error || "Erro no upload.");
+  const data = await res.json().catch(() => ({}));
 
-  msg.textContent = "Upload feito!";
-  document.getElementById("fileInput").value = "";
+  if (!res.ok) {
+    return setMsg(data.error || "Erro no upload.");
+  }
+
+  setMsg("Upload feito!");
+  if (fileInput) fileInput.value = "";
   loadFiles();
 }
 
+if (btnUpload) {
+  btnUpload.onclick = uploadFile;
+}
+
+// ===== DELETE =====
 async function deleteFile(id) {
+  setMsg("Deletando...");
+
   const res = await fetch(`${API_BASE}/files/${id}`, {
     method: "DELETE",
     headers: { Authorization: `Bearer ${token}` }
   });
 
-  const data = await res.json();
-  if (!res.ok) return (msg.textContent = data.error || "Erro ao deletar.");
+  const data = await res.json().catch(() => ({}));
 
-  msg.textContent = "Deletado!";
+  if (!res.ok) {
+    return setMsg(data.error || "Erro ao deletar.");
+  }
+
+  setMsg("Deletado!");
   loadFiles();
 }
 
-document.getElementById("btnUpload").onclick = uploadFile;
+// inicia
 loadFiles();
-
-const searchInput = document.getElementById("searchInput");
-
-searchInput.addEventListener("input", () => {
-  const term = searchInput.value.toLowerCase();
-
-  const filtered = allFiles.filter(f => {
-    const name = (f.display_name || f.original_name).toLowerCase();
-    const folder = f.storage_path.toLowerCase();
-    return name.includes(term) || folder.includes(term);
-  });
-
-  renderFiles(filtered);
-});
-document.getElementById("btnUpload").onclick = uploadFile;
-
