@@ -478,4 +478,33 @@ button:active { transform: scale(0.98); }
 .file-card .small {
   display: none !important;
 }
+/* ===== FORÇA miniaturas menores (override total) ===== */
+.file-grid {
+  grid-template-columns: repeat(6, 1fr) !important;
+  gap: 10px !important;
+}
+
+.file-card .thumb {
+  height: 80px !important;
+  width: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+/* se tiver pdf/arquivo não-imagem */
+.file-card .file-icon {
+  height: 80px !important;
+  font-size: 34px !important;
+}
+
+/* responsivo */
+@media (max-width: 1000px){
+  .file-grid{ grid-template-columns: repeat(5, 1fr) !important; }
+}
+@media (max-width: 700px){
+  .file-grid{ grid-template-columns: repeat(3, 1fr) !important; }
+}
+@media (max-width: 480px){
+  .file-grid{ grid-template-columns: repeat(2, 1fr) !important; }
+}
 
