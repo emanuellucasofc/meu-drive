@@ -18,6 +18,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const foldersEl = document.getElementById("folders");
   const gridFilesEl = document.getElementById("gridFiles");
+  const btnBackFolder = document.getElementById("btnBackFolder");
+  const filesTitle = document.getElementById("filesTitle");
 
   // Toast
   const toast = document.getElementById("toast");
@@ -33,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnDownloadPreview = document.getElementById("btnDownloadPreview");
 
   let allFiles = [];
-  let currentFolder = "all";
+  let currentFolder = null; // null = fora da pasta (mostra cards de pastas)
 
   // ===== Helpers =====
   function setMsg(text) {
@@ -105,29 +107,64 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 
-  // ===== Folders UI =====
+  // ===== Pasta UI =====
+  function updateFolderUI() {
+    if (btnBackFolder) btnBackFolder.style.display = currentFolder ? "inline-flex" : "none";
+    if (filesTitle) filesTitle.textContent = currentFolder ? `Pasta: ${currentFolder}` : "Meus arquivos";
+  }
+
+  if (btnBackFolder) {
+    btnBackFolder.onclick = () => {
+      currentFolder = null;
+      updateFolderUI();
+      renderFolders(allFiles);
+      renderGrid();
+    };
+  }
+
   function renderFolders(files) {
     if (!foldersEl) return;
 
     const set = new Set(files.map((f) => getFolderFromPath(f.storage_path)));
-    const folders = ["all", ...Array.from(set).sort((a, b) => a.localeCompare(b))];
+    const folders = Array.from(set).sort((a, b) => a.localeCompare(b));
 
     foldersEl.innerHTML = "";
-    folders.forEach((name) => {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "folder-btn" + (currentFolder === name ? " active" : "");
-      btn.textContent = name === "all" ? "Todos" : name;
-      btn.onclick = () => {
-        currentFolder = name;
+
+    // Só mostra as pastas quando estiver fora (currentFolder === null)
+    if (currentFolder === null) {
+      const wrap = document.createElement("div");
+      wrap.className = "folders-grid";
+
+      const allBtn = document.createElement("button");
+      allBtn.type = "button";
+      allBtn.className = "folder-card active";
+      allBtn.textContent = "Todos";
+      allBtn.onclick = () => {
+        currentFolder = null;
+        updateFolderUI();
         renderFolders(allFiles);
         renderGrid();
       };
-      foldersEl.appendChild(btn);
-    });
+      wrap.appendChild(allBtn);
+
+      folders.forEach((name) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "folder-card";
+        btn.textContent = name;
+        btn.onclick = () => {
+          currentFolder = name; // entra na pasta
+          updateFolderUI();
+          renderFolders(allFiles);
+          renderGrid();
+        };
+        wrap.appendChild(btn);
+      });
+
+      foldersEl.appendChild(wrap);
+    }
   }
 
-  // ===== Filters =====
   function getFilteredFiles() {
     const term = (searchInput?.value || "").trim().toLowerCase();
 
@@ -135,14 +172,14 @@ document.addEventListener("DOMContentLoaded", () => {
       const folder = getFolderFromPath(f.storage_path);
       const name = (f.display_name || f.original_name || "").toLowerCase();
 
-      const matchFolder = currentFolder === "all" ? true : folder === currentFolder;
-      const matchSearch = !term ? true : name.includes(term) || folder.toLowerCase().includes(term);
+      const matchFolder = currentFolder ? folder === currentFolder : true;
+      const matchSearch = !term ? true : name.includes(term);
 
       return matchFolder && matchSearch;
     });
   }
 
-  // ===== Grid Render =====
+  // ===== Render Grid =====
   function renderGrid() {
     if (!gridFilesEl) return;
 
@@ -193,12 +230,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!res.ok) {
       showToast("Erro", data.error || "Erro ao carregar arquivos.");
       allFiles = [];
+      updateFolderUI();
       renderFolders(allFiles);
       renderGrid();
       return;
     }
 
     allFiles = data.files || [];
+    updateFolderUI();
     renderFolders(allFiles);
     renderGrid();
   }
@@ -231,7 +270,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   if (btnUpload) btnUpload.onclick = uploadFile;
-
   if (searchInput) searchInput.addEventListener("input", renderGrid);
 
   // Start
