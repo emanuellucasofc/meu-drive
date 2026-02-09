@@ -7,80 +7,40 @@
   <link rel="stylesheet" href="./styles.css?v=999" />
 </head>
 <body>
-  <div class="topbar">
-    <div class="topbar-inner">
-      <div class="brand">Meu Drive</div>
-      <button id="btnLogout" class="btn-light" type="button">Sair</button>
-    </div>
-  </div>
+  <div class="dashboard-page">
+    <header class="topbar">
+      <h1>Meu Drive</h1>
+      <button id="btnLogout">Sair</button>
+    </header>
 
-  <div class="container">
-    <div class="grid">
-      <!-- Upload -->
-      <div class="panel">
+    <main class="dashboard-content">
+      <section class="upload-card">
         <h2>Upload</h2>
+        <input id="folderInput" placeholder="Pasta (ex: fotos)" />
+        <input id="fileInput" type="file" />
+        <button id="btnUpload">Enviar</button>
+      </section>
 
-        <div class="row">
-          <input id="folderInput" type="text" placeholder="Pasta (ex: fotos)" />
-        </div>
+      <section class="files-card">
+        <h2>Meus arquivos</h2>
+        <input id="searchInput" placeholder="Buscar..." />
+        <ul id="list" class="files-grid"></ul>
+      </section>
+    </main>
 
-        <div style="height:10px"></div>
+    <!-- MODAL DE IMAGEM -->
+    <div id="imageModal" class="image-modal">
+      <span id="closeModal">✕</span>
+      <a id="downloadImage" download>Baixar</a>
+      <img id="modalImg" />
+    </div>
 
-        <div class="row">
-          <input type="file" id="fileInput" />
-          <button id="btnUpload" class="btn-primary" type="button">Enviar</button>
-        </div>
-
-        <div class="small" id="msg"></div>
-      </div>
-
-      <!-- Arquivos -->
-      <div class="panel">
-        <div class="panel-head">
-          <div class="panel-title-row">
-            <button id="btnBackFolder" class="btn-light" type="button" style="display:none">← Voltar</button>
-            <h2 id="filesTitle" style="margin:0">Meus arquivos</h2>
-          </div>
-
-          <input id="searchInput" type="text" placeholder="Buscar..." />
-        </div>
-
-        <!-- aqui ficam as pastas (cards) quando estiver fora da pasta -->
-        <div id="folders"></div>
-
-        <!-- grid das miniaturas -->
-        <div id="gridFiles" class="file-grid"></div>
-
-        <!-- lista oculta (compatibilidade) -->
-        <ul id="list" style="display:none"></ul>
-      </div>
+    <div id="toast" class="toast">
+      <strong id="toastTitle"></strong>
+      <span id="toastText"></span>
     </div>
   </div>
 
-  <!-- Toast -->
-  <div id="toast" class="toast">
-    <div id="toastTitle" class="toast-title">Aviso</div>
-    <div id="toastText" class="toast-text">Mensagem</div>
-  </div>
-
-  <!-- Modal Preview -->
-  <div id="previewModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <div id="previewTitle" class="modal-title">Preview</div>
-
-        <div class="modal-actions">
-          <a id="btnDownloadPreview" class="btn-primary" download target="_blank">Baixar</a>
-          <button id="btnClosePreview" class="btn-light" type="button">Fechar</button>
-        </div>
-      </div>
-
-      <div class="modal-body">
-        <img id="previewImg" alt="Preview" />
-      </div>
-    </div>
-  </div>
-
-  <script src="./dashboard.js?v=999"></script>
+  <script src="./dashboard.js"></script>
 </body>
 </html>
