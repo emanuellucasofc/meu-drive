@@ -145,29 +145,38 @@ button:active { transform: scale(0.98); }
   background: #0f2f6b;
   color: #ff
 
-  /* ===== Ajustes APENAS para celular ===== */
-@media (max-width: 480px) {
+  /* ===== Ajustes APENAS para celular (iOS/Android) ===== */
+@media (max-width: 768px) {
+  .page-center {
+    padding: 14px;
+  }
+
   .card {
-    max-width: 94vw;      /* ocupa quase toda a largura do celular */
-    padding: 22px;        /* mais “corpo” */
-    border-radius: 16px;
+    max-width: 520px;   /* fica “grande” no celular */
+    width: 100%;
+    padding: 26px;
+    border-radius: 18px;
   }
 
   h1 {
-    font-size: 30px;      /* título maior no celular */
+    font-size: 34px;
   }
 
   .subtitle {
-    font-size: 15px;
+    font-size: 16px;
+  }
+
+  h2 {
+    font-size: 18px;
   }
 
   input {
-    padding: 14px 14px;   /* inputs mais altos para toque */
-    font-size: 16px;      /* evita zoom do iPhone e melhora leitura */
+    padding: 16px 14px;
+    font-size: 17px;   /* leitura melhor no iPhone */
   }
 
   button {
-    padding: 14px;
-    font-size: 16px;
+    padding: 16px;
+    font-size: 17px;
   }
 }
