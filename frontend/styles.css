@@ -144,3 +144,30 @@ button:active { transform: scale(0.98); }
 .btn-primary {
   background: #0f2f6b;
   color: #ff
+
+  /* ===== Ajustes APENAS para celular ===== */
+@media (max-width: 480px) {
+  .card {
+    max-width: 94vw;      /* ocupa quase toda a largura do celular */
+    padding: 22px;        /* mais “corpo” */
+    border-radius: 16px;
+  }
+
+  h1 {
+    font-size: 30px;      /* título maior no celular */
+  }
+
+  .subtitle {
+    font-size: 15px;
+  }
+
+  input {
+    padding: 14px 14px;   /* inputs mais altos para toque */
+    font-size: 16px;      /* evita zoom do iPhone e melhora leitura */
+  }
+
+  button {
+    padding: 14px;
+    font-size: 16px;
+  }
+}
