@@ -423,16 +423,16 @@ button:active { transform: scale(0.98); }
   font-weight:700;
 }
 
-/* ===== Grid de arquivos ===== */
+/* ===== Grid de arquivos (miniaturas menores) ===== */
 .file-grid{
   display:grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap:12px;
+  grid-template-columns: repeat(5, 1fr); /* mais colunas */
+  gap:10px;
 }
 
 .file-card{
   background:#fff;
-  border-radius:14px;
+  border-radius:12px;
   overflow:hidden;
   border:1px solid #e5e7eb;
   cursor:pointer;
@@ -440,10 +440,11 @@ button:active { transform: scale(0.98); }
 
 .thumb{
   width:100%;
-  height:140px;
+  height:95px;          /* ↓ diminui a imagem */
   object-fit:cover;
   display:block;
 }
+
 
 .file-icon{
   height:140px;
@@ -458,13 +459,18 @@ button:active { transform: scale(0.98); }
 }
 
 /* responsivo */
-@media (max-width: 900px){
+@media (max-width: 1000px){
+  .file-grid{ grid-template-columns: repeat(4, 1fr); }
+}
+
+@media (max-width: 700px){
   .file-grid{ grid-template-columns: repeat(3, 1fr); }
 }
-@media (max-width: 600px){
+
+@media (max-width: 480px){
   .file-grid{ grid-template-columns: repeat(2, 1fr); }
-  #searchInput{ max-width: 100%; }
-  .panel-head{ flex-direction:column; align-items:stretch; }
+}
+
 }
 /* Força ocultar qualquer texto/meta dentro dos cards */
 .file-card .meta,
