@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Meu Drive - Dashboard</title>
-  <link rel="stylesheet" href="./styles.css?v=10" />
+  <link rel="stylesheet" href="./styles.css?v=20" />
 </head>
 <body>
   <div class="topbar">
@@ -34,35 +34,43 @@
         <div class="small" id="msg"></div>
       </div>
 
-      <!-- Lista -->
+      <!-- Galeria -->
       <div class="panel">
-        <h2>Meus arquivos</h2>
+        <div class="panel-head">
+          <h2 style="margin:0">Meus arquivos</h2>
+          <input id="searchInput" type="text" placeholder="Buscar..." />
+        </div>
 
-        <input
-          id="searchInput"
-          type="text"
-          placeholder="Buscar arquivos..."
-          style="margin-bottom: 12px"
-        />
+        <div id="folders" class="folder-bar"></div>
 
-        <ul id="list" class="file-list"></ul>
+        <div id="gridFiles" class="file-grid"></div>
+
+        <!-- lista (oculta) só para manter compatível -->
+        <ul id="list" class="file-list" style="display:none"></ul>
       </div>
     </div>
   </div>
-<!-- Modal Preview -->
-<div id="previewModal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <div id="previewTitle" class="modal-title">Preview</div>
-      <button id="btnClosePreview" class="btn-light">Fechar</button>
-    </div>
 
-    <div class="modal-body">
-      <img id="previewImg" alt="Preview" />
+  <!-- Toast -->
+  <div id="toast" class="toast">
+    <div id="toastTitle" class="toast-title">Aviso</div>
+    <div id="toastText" class="toast-text">Mensagem</div>
+  </div>
+
+  <!-- Modal Preview -->
+  <div id="previewModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div id="previewTitle" class="modal-title">Preview</div>
+        <button id="btnClosePreview" class="btn-light">Fechar</button>
+      </div>
+
+      <div class="modal-body">
+        <img id="previewImg" alt="Preview" />
+      </div>
     </div>
   </div>
-</div>
 
-  <script src="./dashboard.js?v=10"></script>
+  <script src="./dashboard.js?v=20"></script>
 </body>
 </html>
