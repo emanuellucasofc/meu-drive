@@ -44,7 +44,6 @@ function formatDate(iso) {
 }
 
 function shortType(mime, name) {
-  // tenta mime primeiro
   if (mime) {
     if (mime.includes("pdf")) return "PDF";
     if (mime.includes("image/")) return "Imagem";
@@ -53,8 +52,6 @@ function shortType(mime, name) {
     if (mime.includes("text/")) return "Texto";
     if (mime.includes("zip") || mime.includes("rar") || mime.includes("7z")) return "Compactado";
   }
-
-  // fallback por extensão
   const lower = (name || "").toLowerCase();
   if (lower.endsWith(".pdf")) return "PDF";
   if (/\.(png|jpg|jpeg|gif|webp)$/.test(lower)) return "Imagem";
@@ -85,7 +82,7 @@ function renderFiles(files) {
     return;
   }
 
-  files.forEach(f => {
+  files.forEach((f) => {
     const name = f.display_name || f.original_name || "Sem nome";
     const folder = getFolderFromPath(f.storage_path);
     const size = formatBytes(f.size);
@@ -94,26 +91,25 @@ function renderFiles(files) {
 
     const li = document.createElement("li");
     li.className = "file-item";
+
+    // Layout 2 colunas: esquerda ações, direita infos
     li.innerHTML = `
-  <div class="file-row">
-    <div class="file-actions">
-      <a class="link" href="${f.public_url}" target="_blank">Abrir</a>
-      <button class="btn-secondary" data-rename="${f.id}">Renomear</button>
-      <button class="btn-danger" data-del="${f.id}">Deletar</button>
-    </div>
+      <div class="file-row">
+        <div class="file-actions">
+          <a class="link" href="${f.public_url}" target="_blank">Abrir</a>
+          <button class="btn-secondary" data-rename="${f.id}">Renomear</button>
+          <button class="btn-danger" data-del="${f.id}">Deletar</button>
+        </div>
 
-    <div class="file-info">
-      <div class="file-name">${name}</div>
-      <div class="small">
-        Pasta: <b>${folder}</b><br/>
-        Tipo: <b>${type}</b><br/>
-        Tamanho: <b>${size}</b><br/>
-        Enviado em: <b>${date}</b>
-      </div>
-    </div>
-  </div>
-`;
-
+        <div class="file-info">
+          <div class="file-name">${name}</div>
+          <div class="small">
+            Pasta: <b>${folder}</b><br/>
+            Tipo: <b>${type}</b><br/>
+            Tamanho: <b>${size}</b><br/>
+            Enviado em: <b>${date}</b>
+          </div>
+        </div>
       </div>
     `;
 
@@ -131,9 +127,9 @@ function renderFiles(files) {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ display_name: newName.trim() })
+        body: JSON.stringify({ display_name: newName.trim() }),
       });
 
       const data = await res.json().catch(() => ({}));
@@ -152,7 +148,7 @@ async function loadFiles() {
   setMsg("");
 
   const res = await fetch(`${API_BASE}/files`, {
-    headers: { Authorization: `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
   });
 
   const data = await res.json().catch(() => ({}));
@@ -169,15 +165,10 @@ async function loadFiles() {
 
 // ===== BUSCA =====
 function applySearch() {
-  if (!searchInput) {
-    renderFiles(allFiles);
-    return;
-  }
-
-  const term = (searchInput.value || "").trim().toLowerCase();
+  const term = (searchInput?.value || "").trim().toLowerCase();
   if (!term) return renderFiles(allFiles);
 
-  const filtered = allFiles.filter(f => {
+  const filtered = allFiles.filter((f) => {
     const name = (f.display_name || f.original_name || "").toLowerCase();
     const folder = getFolderFromPath(f.storage_path).toLowerCase();
     return name.includes(term) || folder.includes(term);
@@ -206,7 +197,7 @@ async function uploadFile() {
   const res = await fetch(`${API_BASE}/files/upload`, {
     method: "POST",
     headers: { Authorization: `Bearer ${token}` },
-    body: form
+    body: form,
   });
 
   const data = await res.json().catch(() => ({}));
@@ -233,7 +224,7 @@ async function deleteFile(id) {
 
   const res = await fetch(`${API_BASE}/files/${id}`, {
     method: "DELETE",
-    headers: { Authorization: `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
   });
 
   const data = await res.json().catch(() => ({}));
@@ -246,5 +237,5 @@ async function deleteFile(id) {
   loadFiles();
 }
 
-// inicia
+// iniciar
 loadFiles();
