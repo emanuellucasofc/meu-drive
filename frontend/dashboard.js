@@ -24,6 +24,7 @@ let toastTimer = null;
 // modal preview
 const previewModal = document.getElementById("previewModal");
 const previewImg = document.getElementById("previewImg");
+const btnDownloadPreview = document.getElementById("btnDownloadPreview");
 const previewTitle = document.getElementById("previewTitle");
 const btnClosePreview = document.getElementById("btnClosePreview");
 
@@ -64,11 +65,20 @@ function openPreview(url, title) {
   previewImg.src = url;
   previewModal.classList.add("show");
 }
-function closePreview() {
-  if (!previewModal) return;
-  previewModal.classList.remove("show");
-  if (previewImg) previewImg.src = "";
+function openPreview(url, title) {
+  if (!previewModal || !previewImg) return window.open(url, "_blank");
+
+  previewTitle.textContent = title || "Preview";
+  previewImg.src = url;
+
+  if (btnDownloadPreview) {
+    btnDownloadPreview.href = url;
+    btnDownloadPreview.setAttribute("download", title || "arquivo");
+  }
+
+  previewModal.classList.add("show");
 }
+
 if (btnClosePreview) btnClosePreview.onclick = closePreview;
 if (previewModal) {
   previewModal.addEventListener("click", (e) => {
