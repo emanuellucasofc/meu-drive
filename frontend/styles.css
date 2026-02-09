@@ -285,3 +285,14 @@ input[type="file"]{
   .file-grid{ grid-template-columns: repeat(3, 1fr) !important; }
   .file-card .thumb{ height: 50px !important; }
 }
+/* ===== Botão Voltar (mais visível) ===== */
+#btnBackFolder {
+  background: #0b2a66;       /* azul escuro */
+  color: #fff;               /* texto branco */
+  border: none;
+}
+
+#btnBackFolder:hover {
+  filter: brightness(1.15);
+}
+
