@@ -1,3 +1,7 @@
+document.addEventListener("DOMContentLoaded", () => {
+  // TODO o seu código do dashboard.js fica aqui dentro
+});
+
 const API_BASE = "https://meu-drive-api.onrender.com";
 
 const token = localStorage.getItem("access_token");
