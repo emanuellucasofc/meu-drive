@@ -631,5 +631,14 @@ button:active { transform: scale(0.98); }
   object-fit: contain !important;
   background: rgba(255,255,255,.03) !important;
 }
-
+/* nome curto embaixo da miniatura */
+.thumb-name{
+  padding: 6px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #0b1b3a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
