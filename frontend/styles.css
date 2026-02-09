@@ -641,4 +641,12 @@ button:active { transform: scale(0.98); }
   overflow: hidden;
   text-overflow: ellipsis;
 }
+/* Modal não pode bloquear cliques quando está escondido */
+.modal { 
+  pointer-events: none !important; 
+}
+.modal.show { 
+  pointer-events: auto !important; 
+}
+
 
