@@ -317,72 +317,73 @@ input[type="file"]{
 }
 
 .mini-btn:hover{ filter: brightness(1.12); }
-/* ===== Menu de configurações por arquivo ===== */
-.file-card{
+/* ===== Menu de 3 pontos (configurações) ===== */
+
+.file-card {
   position: relative;
 }
 
-.card-top{
-  position:absolute;
-  top:6px;
-  right:6px;
-  z-index: 5;
-  display:flex;
-  align-items:center;
-  gap: 6px;
-}
-
-.menu-btn{
-  width: 34px;
-  height: 30px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: 900;
-  background: rgba(11,42,102,.92);
-  color:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-.menu-btn:hover{ filter: brightness(1.12); }
-
-.menu{
+.card-top {
   position: absolute;
-  top: 36px;
-  right: 0;
-  min-width: 150px;
-  background: #ffffff;
-  color: #0b1b3a;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  box-shadow: 0 16px 40px rgba(0,0,0,.18);
-  overflow: hidden;
-  display: none;
+  top: 6px;
+  right: 6px;
+  z-index: 10;
 }
 
-.menu.open{ display:block; }
+/* botão ⋮ */
+.menu-btn {
+  width: 32px;
+  height: 28px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: rgba(11, 42, 102, 0.95);
+  color: #fff;
+  font-size: 18px;
+  font-weight: bold;
+}
 
-.menu-item{
+.menu-btn:hover {
+  filter: brightness(1.15);
+}
+
+/* MENU — começa ESCONDIDO */
+.menu {
+  position: absolute;
+  top: 34px;
+  right: 0;
+  min-width: 140px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  display: none; /* 🔴 ESCONDIDO */
+}
+
+/* SOMENTE quando clicar */
+.menu.open {
+  display: block;
+}
+
+.menu-item {
   width: 100%;
-  text-align: left;
   padding: 10px 12px;
   background: transparent;
   border: none;
-  cursor: pointer;
-  font-weight: 800;
+  text-align: left;
+  font-weight: 700;
   font-size: 13px;
+  cursor: pointer;
 }
 
-.menu-item:hover{
-  background: #f1f5ff;
+.menu-item:hover {
+  background: #f0f4ff;
 }
 
-.menu-item.danger{
-  color: #b42318;
+.menu-item.danger {
+  color: #c0392b;
 }
 
-.menu-item.danger:hover{
+.menu-item.danger:hover {
   background: #ffecec;
 }
