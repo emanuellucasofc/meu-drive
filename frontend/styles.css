@@ -568,4 +568,68 @@ button:active { transform: scale(0.98); }
 @media (max-width: 480px){
   .file-grid{ grid-template-columns: repeat(2, 1fr) !important; }
 }
+/* ========= MODAL CENTRAL (Preview estilo Drive) ========= */
+.modal{
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(0,0,0,.65) !important;
+  display: none !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 999999 !important;
+  padding: 14px !important;
+}
+
+.modal.show{ display:flex !important; }
+
+.modal-content{
+  width: min(980px, 96vw) !important;
+  max-height: 92vh !important;
+  background: #0b1b3a !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  box-shadow: 0 20px 60px rgba(0,0,0,.5) !important;
+}
+
+.modal-header{
+  display:flex !important;
+  align-items:center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  padding: 12px 14px !important;
+  background: rgba(255,255,255,.06) !important;
+  border-bottom: 1px solid rgba(255,255,255,.12) !important;
+  color: #fff !important;
+}
+
+.modal-title{
+  font-weight: 800 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  max-width: 55vw !important;
+}
+
+.modal-actions{
+  display:flex !important;
+  gap: 10px !important;
+  align-items:center !important;
+}
+
+.modal-body{
+  padding: 12px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+
+#previewImg{
+  max-width: 95vw !important;
+  max-height: 76vh !important;
+  border-radius: 12px !important;
+  object-fit: contain !important;
+  background: rgba(255,255,255,.03) !important;
+}
+
 
