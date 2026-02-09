@@ -1,6 +1,6 @@
 const API_BASE = "https://meu-drive-api.onrender.com";
 
-const msg = document.getElementById("msg");
+const msg = document.getElementById("msg"); // ainda vamos usar como fallback
 const list = document.getElementById("list");
 
 const token = localStorage.getItem("access_token");
@@ -13,10 +13,34 @@ const fileInput = document.getElementById("fileInput");
 const folderInput = document.getElementById("folderInput");
 const searchInput = document.getElementById("searchInput");
 
+// toast (já existe no HTML)
+const toast = document.getElementById("toast");
+const toastTitle = document.getElementById("toastTitle");
+const toastText = document.getElementById("toastText");
+
 let allFiles = [];
+let toastTimer = null;
 
 function setMsg(text) {
   if (msg) msg.textContent = text || "";
+}
+
+function showToast(title, text) {
+  if (!toast || !toastTitle || !toastText) {
+    // fallback se o toast não existir
+    setMsg(`${title}: ${text}`);
+    return;
+  }
+
+  toastTitle.textContent = title;
+  toastText.textContent = text;
+
+  toast.classList.add("show");
+
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    toast.classList.remove("show");
+  }, 3200);
 }
 
 function getFolderFromPath(storage_path) {
@@ -66,7 +90,8 @@ function shortType(mime, name) {
 if (btnLogout) {
   btnLogout.onclick = () => {
     localStorage.removeItem("access_token");
-    window.location.href = "./index.html";
+    showToast("Sessão", "Você saiu da conta.");
+    setTimeout(() => (window.location.href = "./index.html"), 300);
   };
 }
 
@@ -92,7 +117,6 @@ function renderFiles(files) {
     const li = document.createElement("li");
     li.className = "file-item";
 
-    // Layout 2 colunas: esquerda ações, direita infos
     li.innerHTML = `
       <div class="file-row">
         <div class="file-actions">
@@ -114,14 +138,14 @@ function renderFiles(files) {
     `;
 
     // delete
-    li.querySelector(`[data-del="${f.id}"]`).onclick = () => deleteFile(f.id);
+    li.querySelector(`[data-del="${f.id}"]`).onclick = () => deleteFile(f.id, name);
 
     // rename
     li.querySelector(`[data-rename="${f.id}"]`).onclick = async () => {
       const newName = prompt("Novo nome:", name);
       if (!newName) return;
 
-      setMsg("Renomeando...");
+      showToast("Renomear", "Renomeando arquivo...");
 
       const res = await fetch(`${API_BASE}/files/${f.id}/rename`, {
         method: "PATCH",
@@ -133,9 +157,12 @@ function renderFiles(files) {
       });
 
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) return setMsg(data.error || "Erro ao renomear.");
+      if (!res.ok) {
+        showToast("Erro", data.error || "Erro ao renomear.");
+        return;
+      }
 
-      setMsg("Renomeado!");
+      showToast("Sucesso", "Arquivo renomeado!");
       loadFiles();
     };
 
@@ -145,8 +172,6 @@ function renderFiles(files) {
 
 // ===== CARREGAR =====
 async function loadFiles() {
-  setMsg("");
-
   const res = await fetch(`${API_BASE}/files`, {
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -154,7 +179,7 @@ async function loadFiles() {
   const data = await res.json().catch(() => ({}));
 
   if (!res.ok) {
-    setMsg(data.error || "Erro ao carregar arquivos.");
+    showToast("Erro", data.error || "Erro ao carregar arquivos.");
     renderFiles([]);
     return;
   }
@@ -183,12 +208,12 @@ if (searchInput) {
 
 // ===== UPLOAD =====
 async function uploadFile() {
-  setMsg("Enviando...");
-
   const file = fileInput?.files?.[0];
-  if (!file) return setMsg("Selecione um arquivo.");
+  if (!file) return showToast("Atenção", "Selecione um arquivo.");
 
   const folder = (folderInput?.value || "root").trim();
+
+  showToast("Upload", "Enviando arquivo...");
 
   const form = new FormData();
   form.append("file", file);
@@ -203,10 +228,11 @@ async function uploadFile() {
   const data = await res.json().catch(() => ({}));
 
   if (!res.ok) {
-    return setMsg(data.error || "Erro no upload.");
+    showToast("Erro", data.error || "Erro no upload.");
+    return;
   }
 
-  setMsg("Upload feito!");
+  showToast("Sucesso", "Upload feito!");
   if (fileInput) fileInput.value = "";
   loadFiles();
 }
@@ -216,11 +242,11 @@ if (btnUpload) {
 }
 
 // ===== DELETE =====
-async function deleteFile(id) {
-  const ok = confirm("Deseja deletar este arquivo?");
+async function deleteFile(id, name) {
+  const ok = confirm(`Deseja deletar "${name}"?`);
   if (!ok) return;
 
-  setMsg("Deletando...");
+  showToast("Deletar", "Removendo arquivo...");
 
   const res = await fetch(`${API_BASE}/files/${id}`, {
     method: "DELETE",
@@ -230,12 +256,13 @@ async function deleteFile(id) {
   const data = await res.json().catch(() => ({}));
 
   if (!res.ok) {
-    return setMsg(data.error || "Erro ao deletar.");
+    showToast("Erro", data.error || "Erro ao deletar.");
+    return;
   }
 
-  setMsg("Deletado!");
+  showToast("Sucesso", "Arquivo deletado!");
   loadFiles();
 }
 
-// iniciar
+// inicia
 loadFiles();
