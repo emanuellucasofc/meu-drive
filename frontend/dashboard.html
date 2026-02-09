@@ -1,28 +1,52 @@
 <!doctype html>
-<html>
+<html lang="pt-br">
 <head>
   <meta charset="utf-8" />
   <title>Meu Drive - Dashboard</title>
+  <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
-  <h1>Meus arquivos</h1>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">Meu Drive</div>
+      <button id="btnLogout" class="btn-light">Sair</button>
+    </div>
+  </div>
 
-  <button id="btnLogout">Sair</button>
+  <div class="container">
+    <div class="grid">
+      <!-- Upload -->
+      <div class="panel">
+        <h2>Upload</h2>
 
-  <h2>Upload</h2>
+        <div class="row">
+          <input id="folderInput" type="text" placeholder="Pasta (ex: fotos)" />
+        </div>
 
-  <input id="folderInput" placeholder="Pasta (ex: fotos)" />
-  <br/><br/>
+        <div style="height:10px"></div>
 
-  <input type="file" id="fileInput" />
-  <button id="btnUpload">Enviar</button>
+        <div class="row">
+          <input type="file" id="fileInput" />
+          <button id="btnUpload" class="btn-primary">Enviar</button>
+        </div>
 
-  <p id="msg"></p>
+        <div class="small" id="msg"></div>
+      </div>
 
-  <h2>Lista</h2>
-  <ul id="list"></ul>
+      <!-- Lista -->
+      <div class="panel">
+        <h2>Meus arquivos</h2>
+        <ul id="list" class="file-list"></ul>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast">
+    <div class="toast-title" id="toastTitle">Tudo certo</div>
+    <div class="toast-text" id="toastText">Mensagem</div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./dashboard.js?v=3"></script>
+  <script src="./dashboard.js?v=4"></script>
 </body>
 </html>
