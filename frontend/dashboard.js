@@ -1,6 +1,6 @@
 const API_BASE = "https://meu-drive-api.onrender.com";
 
-const msg = document.getElementById("msg"); // ainda vamos usar como fallback
+const msg = document.getElementById("msg");
 const list = document.getElementById("list");
 
 const token = localStorage.getItem("access_token");
@@ -18,6 +18,12 @@ const toast = document.getElementById("toast");
 const toastTitle = document.getElementById("toastTitle");
 const toastText = document.getElementById("toastText");
 
+// modal preview (novo)
+const previewModal = document.getElementById("previewModal");
+const previewImg = document.getElementById("previewImg");
+const previewTitle = document.getElementById("previewTitle");
+const btnClosePreview = document.getElementById("btnClosePreview");
+
 let allFiles = [];
 let toastTimer = null;
 
@@ -27,20 +33,16 @@ function setMsg(text) {
 
 function showToast(title, text) {
   if (!toast || !toastTitle || !toastText) {
-    // fallback se o toast não existir
     setMsg(`${title}: ${text}`);
     return;
   }
 
   toastTitle.textContent = title;
   toastText.textContent = text;
-
   toast.classList.add("show");
 
   if (toastTimer) clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => {
-    toast.classList.remove("show");
-  }, 3200);
+  toastTimer = setTimeout(() => toast.classList.remove("show"), 3200);
 }
 
 function getFolderFromPath(storage_path) {
@@ -86,6 +88,42 @@ function shortType(mime, name) {
   return "Arquivo";
 }
 
+function isImageFile(mime, name) {
+  if (mime && mime.startsWith("image/")) return true;
+  const lower = (name || "").toLowerCase();
+  return /\.(png|jpg|jpeg|gif|webp)$/.test(lower);
+}
+
+// ===== Modal Preview =====
+function openPreview(url, title) {
+  if (!previewModal || !previewImg) return window.open(url, "_blank");
+
+  previewTitle.textContent = title || "Preview";
+  previewImg.src = url;
+
+  previewModal.classList.add("show");
+}
+
+function closePreview() {
+  if (!previewModal) return;
+  previewModal.classList.remove("show");
+  if (previewImg) previewImg.src = "";
+}
+
+if (btnClosePreview) btnClosePreview.onclick = closePreview;
+
+// fecha ao clicar fora
+if (previewModal) {
+  previewModal.addEventListener("click", (e) => {
+    if (e.target === previewModal) closePreview();
+  });
+}
+
+// fecha ESC
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closePreview();
+});
+
 // ===== LOGOUT =====
 if (btnLogout) {
   btnLogout.onclick = () => {
@@ -114,12 +152,15 @@ function renderFiles(files) {
     const type = shortType(f.mime_type, f.original_name);
     const date = formatDate(f.created_at);
 
+    const canPreview = isImageFile(f.mime_type, f.original_name);
+
     const li = document.createElement("li");
     li.className = "file-item";
 
     li.innerHTML = `
       <div class="file-row">
         <div class="file-actions">
+          ${canPreview ? `<button class="btn-secondary" data-preview="${f.id}">Preview</button>` : ``}
           <a class="link" href="${f.public_url}" target="_blank">Abrir</a>
           <button class="btn-secondary" data-rename="${f.id}">Renomear</button>
           <button class="btn-danger" data-del="${f.id}">Deletar</button>
@@ -136,6 +177,12 @@ function renderFiles(files) {
         </div>
       </div>
     `;
+
+    // preview
+    const previewBtn = li.querySelector(`[data-preview="${f.id}"]`);
+    if (previewBtn) {
+      previewBtn.onclick = () => openPreview(f.public_url, name);
+    }
 
     // delete
     li.querySelector(`[data-del="${f.id}"]`).onclick = () => deleteFile(f.id, name);
