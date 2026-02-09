@@ -274,3 +274,73 @@ button:active { transform: scale(0.98); }
     flex: 1;
   }
 }
+/* ===== Ajuste final da lista de arquivos ===== */
+
+/* remove os bullets da lista */
+.file-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* cada item vira um card limpo */
+.file-item {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+/* organiza ações + info */
+.file-row {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+/* coluna esquerda (botões) */
+.file-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.file-actions a,
+.file-actions button {
+  width: 100%;
+  text-align: center;
+  font-size: 12.5px;
+  padding: 7px 8px;
+  border-radius: 10px;
+}
+
+/* coluna direita (infos) */
+.file-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.file-info .file-name {
+  font-size: 14.5px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+/* mobile continua confortável */
+@media (max-width: 768px) {
+  .file-row {
+    grid-template-columns: 1fr;
+  }
+
+  .file-actions {
+    flex-direction: row;
+  }
+
+  .file-actions a,
+  .file-actions button {
+    flex: 1;
+  }
+}
