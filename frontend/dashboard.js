@@ -146,31 +146,37 @@ function renderGrid() {
   }
 
   files.forEach(f => {
-    const name = f.display_name || f.original_name || "Sem nome";
-    const folder = getFolderFromPath(f.storage_path);
-    const isImg = isImageFile(f.mime_type, f.original_name);
+  const name = f.display_name || f.original_name || "Sem nome";
+  const isImg = isImageFile(f.mime_type, f.original_name);
 
-    const card = document.createElement("div");
-    card.className = "file-card";
+  const card = document.createElement("div");
+  card.className = "file-card";
 
-    if (isImg) {
-      card.innerHTML = `
-        <img class="thumb" src="${f.public_url}" alt="${name}" />
-        <div class="meta hidden">
-          <div><b>${name}</b></div>
-          <div>Pasta: ${folder}</div>
-        </div>
-      `;
-      card.querySelector(".thumb").onclick = () => openPreview(f.public_url, name);
-    } else {
-      // não-imagem: mostra um ícone simples e abre em nova aba
-      card.innerHTML = `
-        <div class="file-icon">📄</div>
-        <div class="meta hidden">
-          <div><b>${name}</b></div>
-          <div>Pasta: ${folder}</div>
-        </div>
-      `;
+  if (isImg) {
+    // ✅ IMAGEM
+    card.innerHTML = `
+      <img class="thumb" src="${f.public_url}" alt="${name}" />
+      <div class="thumb-name">${name}</div>
+    `;
+
+    card.querySelector(".thumb").onclick = () => {
+      openPreview(f.public_url, name);
+    };
+
+  } else {
+    // ✅ NÃO IMAGEM (PDF, ZIP, etc.)
+    card.innerHTML = `
+      <div class="file-icon">📄</div>
+      <div class="thumb-name">${name}</div>
+    `;
+
+    card.onclick = () => {
+      window.open(f.public_url, "_blank");
+    };
+  }
+
+  gridFilesEl.appendChild(card);
+});
       card.onclick = () => window.open(f.public_url, "_blank");
     }
 
