@@ -1,4 +1,4 @@
-const API_BASE = "https://meu-drive-api.onrender.com"; // ex: https://meu-drive-api.onrender.com
+const API_BASE = "https://meu-drive-api.onrender.com";
 
 const msg = document.getElementById("msg");
 const list = document.getElementById("list");
@@ -13,31 +13,72 @@ document.getElementById("btnLogout").onclick = () => {
 
 async function loadFiles() {
   list.innerHTML = "";
+  msg.textContent = "";
+
   const res = await fetch(`${API_BASE}/files`, {
     headers: { Authorization: `Bearer ${token}` }
   });
+
   const data = await res.json();
-  if (!res.ok) return (msg.textContent = data.error || "Erro ao carregar.");
+  if (!res.ok) {
+    msg.textContent = data.error || "Erro ao carregar.";
+    return;
+  }
+
+  if (!data.files.length) {
+    const li = document.createElement("li");
+    li.textContent = "Nenhum arquivo ainda.";
+    list.appendChild(li);
+    return;
+  }
 
   data.files.forEach(f => {
+    const name = f.display_name || f.original_name;
+
     const li = document.createElement("li");
     li.innerHTML = `
-      <b>${f.original_name}</b><br/>
+      <b>${name}</b><br/>
       <a href="${f.public_url}" target="_blank">Abrir link público</a>
-      <button data-id="${f.id}">Deletar</button>
+      <button data-rename="${f.id}">Renomear</button>
+      <button data-del="${f.id}">Deletar</button>
     `;
-    li.querySelector("button").onclick = () => deleteFile(f.id);
+
+    li.querySelector(`[data-del="${f.id}"]`).onclick = () => deleteFile(f.id);
+
+    li.querySelector(`[data-rename="${f.id}"]`).onclick = async () => {
+      const newName = prompt("Novo nome:", name);
+      if (!newName) return;
+
+      const res = await fetch(`${API_BASE}/files/${f.id}/rename`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ display_name: newName.trim() })
+      });
+
+      const data = await res.json();
+      if (!res.ok) return (msg.textContent = data.error || "Erro ao renomear.");
+
+      loadFiles();
+    };
+
     list.appendChild(li);
   });
 }
 
 async function uploadFile() {
   msg.textContent = "Enviando...";
+
   const file = document.getElementById("fileInput").files[0];
   if (!file) return (msg.textContent = "Selecione um arquivo.");
 
+  const folder = (document.getElementById("folderInput").value || "root").trim();
+
   const form = new FormData();
   form.append("file", file);
+  form.append("folder", folder);
 
   const res = await fetch(`${API_BASE}/files/upload`, {
     method: "POST",
@@ -58,6 +99,7 @@ async function deleteFile(id) {
     method: "DELETE",
     headers: { Authorization: `Bearer ${token}` }
   });
+
   const data = await res.json();
   if (!res.ok) return (msg.textContent = data.error || "Erro ao deletar.");
 
