@@ -58,18 +58,23 @@
   </div>
 
   <!-- Modal Preview -->
-  <div id="previewModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <div id="previewTitle" class="modal-title">Preview</div>
-        <button id="btnClosePreview" class="btn-light">Fechar</button>
-      </div>
+<div id="previewModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div id="previewTitle" class="modal-title">Preview</div>
 
-      <div class="modal-body">
-        <img id="previewImg" alt="Preview" />
+      <div class="modal-actions">
+        <a id="btnDownloadPreview" class="btn-primary" download target="_blank">Baixar</a>
+        <button id="btnClosePreview" class="btn-light" type="button">Fechar</button>
       </div>
     </div>
+
+    <div class="modal-body">
+      <img id="previewImg" alt="Preview" />
+    </div>
   </div>
+</div>
+
 
   <script src="./dashboard.js?v=20"></script>
 </body>
