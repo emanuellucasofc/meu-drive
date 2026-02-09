@@ -466,4 +466,10 @@ button:active { transform: scale(0.98); }
   #searchInput{ max-width: 100%; }
   .panel-head{ flex-direction:column; align-items:stretch; }
 }
+/* Força ocultar qualquer texto/meta dentro dos cards */
+.file-card .meta,
+.file-card .file-name,
+.file-card .small {
+  display: none !important;
+}
 
