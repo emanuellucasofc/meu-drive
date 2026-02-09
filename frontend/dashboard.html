@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Meu Drive - Dashboard</title>
-  <link rel="stylesheet" href="./styles.css?v=3" />
+  <link rel="stylesheet" href="./styles.css?v=10" />
 </head>
 <body>
   <div class="topbar">
@@ -37,23 +37,19 @@
       <!-- Lista -->
       <div class="panel">
         <h2>Meus arquivos</h2>
+
         <input
-  id="searchInput"
-  type="text"
-  placeholder="Buscar arquivos..."
-  style="margin-bottom: 12px"
-/>
+          id="searchInput"
+          type="text"
+          placeholder="Buscar arquivos..."
+          style="margin-bottom: 12px"
+        />
+
         <ul id="list" class="file-list"></ul>
       </div>
     </div>
   </div>
 
-  <div id="toast" class="toast">
-    <div class="toast-title" id="toastTitle">Tudo certo</div>
-    <div class="toast-text" id="toastText">Mensagem</div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./dashboard.js?v=5"></script>
+  <script src="./dashboard.js?v=10"></script>
 </body>
 </html>
