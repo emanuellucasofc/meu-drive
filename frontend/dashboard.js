@@ -464,37 +464,56 @@ document.addEventListener("DOMContentLoaded", () => {
   // ===== Upload =====
     // tenta sincronizar ao abrir
   syncUploads();
-  async function uploadFile() {
+   async function uploadFile() {
     const file = fileInput?.files?.[0];
     if (!file) return showToast("Atenção", "Selecione um arquivo.");
 
     const folder = (folderInput?.value || "root").trim();
+
+    // OFFLINE: guarda na fila
+    if (!navigator.onLine) {
+      try {
+        await queueUpload({ file, folder });
+        showToast("Offline", "Salvei na fila. Envio automático quando a internet voltar.");
+        if (fileInput) fileInput.value = "";
+      } catch {
+        showToast("Erro", "Não consegui salvar offline (IndexedDB).");
+      }
+      return;
+    }
+
+    // ONLINE: envia normal
     showToast("Upload", "Enviando...");
 
     const form = new FormData();
     form.append("file", file);
     form.append("folder", folder);
 
-    const res = await fetch(`${API_BASE}/files/upload`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-      body: form,
-    });
+    try {
+      const res = await fetch(`${API_BASE}/files/upload`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: form
+      });
 
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) return showToast("Erro", data.error || "Erro no upload.");
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) return showToast("Erro", data.error || "Erro no upload.");
 
-    showToast("Sucesso", "Arquivo enviado!");
-    if (fileInput) fileInput.value = "";
-    loadFiles();
+      showToast("Sucesso", "Arquivo enviado!");
+      if (fileInput) fileInput.value = "";
+      loadFiles();
+    } catch {
+      // se cair a internet no meio, joga pra fila
+      try {
+        await queueUpload({ file, folder });
+        showToast("Conexão caiu", "Salvei na fila. Vou enviar quando voltar.");
+        if (fileInput) fileInput.value = "";
+      } catch {
+        showToast("Erro", "Falhou upload e não consegui salvar offline.");
+      }
+    }
   }
 
-  if (btnUpload) btnUpload.onclick = uploadFile;
-  if (searchInput) searchInput.addEventListener("input", renderGrid);
-
-  if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("./sw.js").catch(() => {});
-}
   // ===== OFFLINE: salva na fila e envia depois =====
     if (!navigator.onLine) {
       await queueUpload({ file, folder });
