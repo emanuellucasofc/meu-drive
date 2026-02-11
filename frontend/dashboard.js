@@ -386,6 +386,107 @@ document.addEventListener("DOMContentLoaded", () => {
   if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("./sw.js").catch(() => {});
 }
+    // ===== PWA / Service Worker =====
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("./sw.js").catch(() => {});
+  }
+
+  // ===== Offline Upload Queue (IndexedDB) =====
+  function openDB() {
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open("meuDriveDB", 1);
+      req.onupgradeneeded = () => {
+        const db = req.result;
+        if (!db.objectStoreNames.contains("uploadQueue")) {
+          db.createObjectStore("uploadQueue", { keyPath: "id" });
+        }
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async function queueUpload({ file, folder }) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction("uploadQueue", "readwrite");
+      const store = tx.objectStore("uploadQueue");
+
+      const item = {
+        id: (crypto?.randomUUID?.() || String(Date.now()) + Math.random()),
+        folder: folder || "root",
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        createdAt: Date.now(),
+        blob: file
+      };
+
+      store.put(item);
+      tx.oncomplete = () => resolve(item);
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+
+  async function getQueuedUploads() {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction("uploadQueue", "readonly");
+      const store = tx.objectStore("uploadQueue");
+      const req = store.getAll();
+      req.onsuccess = () => resolve(req.result || []);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async function removeQueuedUpload(id) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction("uploadQueue", "readwrite");
+      tx.objectStore("uploadQueue").delete(id);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+
+  async function syncUploads() {
+    if (!navigator.onLine) return;
+
+    const items = await getQueuedUploads();
+    if (!items.length) return;
+
+    // Se quiser, dá pra mostrar o total
+    showToast("Sincronizando", `Enviando ${items.length} arquivo(s)...`);
+
+    for (const item of items) {
+      try {
+        const form = new FormData();
+        form.append("file", item.blob, item.name);
+        form.append("folder", item.folder || "root");
+
+        const res = await fetch(`${API_BASE}/files/upload`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+          body: form
+        });
+
+        if (res.ok) {
+          await removeQueuedUpload(item.id);
+        } else {
+          // se falhar, para e tenta depois
+          break;
+        }
+      } catch {
+        break;
+      }
+    }
+
+    showToast("Ok", "Sincronização concluída (ou pausada).");
+    loadFiles();
+  }
+
+  window.addEventListener("online", () => syncUploads());
+
 
   // Start
   loadFiles();
