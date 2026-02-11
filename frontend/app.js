@@ -37,6 +37,10 @@ document.getElementById("btnLogin").addEventListener("click", async () => {
   const { data, error } = await sb.auth.signInWithPassword({ email, password });
   if (error) return (msg.textContent = error.message);
 
+  if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("./sw.js").catch(() => {});
+}
+
   localStorage.setItem("access_token", data.session.access_token);
   window.location.href = "./dashboard.html";
 });
