@@ -1,1 +1,10 @@
+{
+  "name": "Meu Drive",
+  "short_name": "Drive",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#061a3a",
+  "theme_color": "#061a3a",
+  "icons": []
+}
 
