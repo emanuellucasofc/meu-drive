@@ -383,6 +383,10 @@ document.addEventListener("DOMContentLoaded", () => {
   if (btnUpload) btnUpload.onclick = uploadFile;
   if (searchInput) searchInput.addEventListener("input", renderGrid);
 
+  if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("./sw.js").catch(() => {});
+}
+
   // Start
   loadFiles();
 });
