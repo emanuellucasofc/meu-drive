@@ -1,5 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
   const API_BASE = "https://meu-drive-api.onrender.com";
+  // ===== FIX: garante que o JS está rodando e botões funcionam =====
+console.log("dashboard.js carregou ✅");
+
     // ===== PWA: garante update do Service Worker =====
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("./sw.js").then((reg) => {
@@ -619,6 +622,15 @@ document.addEventListener("DOMContentLoaded", () => {
     showToast("Ok", "Sincronização concluída (ou pausada).");
     loadFiles();
   }
+  // ===== FIX BOTÕES (fallback) =====
+(function () {
+  const btnUpload = document.getElementById("btnUpload");
+  const btnLogout = document.getElementById("btnLogout");
+
+  if (btnUpload) btnUpload.type = "button";
+  if (btnLogout) btnLogout.type = "button";
+})();
+
 
   window.addEventListener("online", () => syncUploads());
 
