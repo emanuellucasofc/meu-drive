@@ -355,6 +355,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ===== Upload =====
+    // tenta sincronizar ao abrir
+  syncUploads();
   async function uploadFile() {
     const file = fileInput?.files?.[0];
     if (!file) return showToast("Atenção", "Selecione um arquivo.");
@@ -386,6 +388,13 @@ document.addEventListener("DOMContentLoaded", () => {
   if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("./sw.js").catch(() => {});
 }
+  // ===== OFFLINE: salva na fila e envia depois =====
+    if (!navigator.onLine) {
+      await queueUpload({ file, folder });
+      showToast("Offline", "Arquivo salvo na fila. Vou enviar quando a internet voltar.");
+      if (fileInput) fileInput.value = "";
+      return;
+    }
     // ===== PWA / Service Worker =====
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("./sw.js").catch(() => {});
